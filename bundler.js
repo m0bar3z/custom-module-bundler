@@ -23,11 +23,20 @@ function createAsset(filename) {
   })
 
   const id = ID++;
+  // transpile the module with babel
+  const { code } = babel.transformFromAst(ast, null, {
+    // presets? how to do the transformation, just a set of rules to tell babel 
+    // how to transofrm my code
+    // env preset just tells babel: make sure my code is goiing to run on every popular
+    // browser
+    presets: ["@babel/preset-env"]
+  })
 
   return {
     id,
     filename,
-    dependencies
+    dependencies,
+    code
   }
 }
 
@@ -51,5 +60,41 @@ function createGraph(entry) {
   return queue;
 }
 
+function bundle(graph) {
+  let modules = '';
+
+  graph.forEach(mod => {
+    modules = modules + `${mod.id}: [
+      function (require, module, exports) { 
+        ${mod.code}
+      },
+      ${JSON.stringify(mod.mapping)}
+    ],`;
+  })
+
+  const result = `
+    (function(modules) {
+      function require(id) {
+        const [fn, mapping] = modules[id];
+
+        function localRequire(relativePath) {
+          return require(mapping[relativePath]);
+        }
+
+        const module = { exports: {} } 
+
+        fn(localRequire, module, module.exports);
+
+        return module.exports;
+      }
+
+      require(0);
+    })({${modules}})
+  `
+
+  return result;
+}
+
 const graph = createGraph('./example/entry.js');
-console.log(graph);
+const result = bundle(graph);
+console.log(result);
