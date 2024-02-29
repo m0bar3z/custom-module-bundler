@@ -1,0 +1,19 @@
+{
+  "name": "custom-module-bundler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bundler.js",
+  "type": "module",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.24.0"
+  }
+}
