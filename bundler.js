@@ -97,4 +97,9 @@ function bundle(graph) {
 
 const graph = createGraph('./example/entry.js');
 const result = bundle(graph);
-console.log(result);
+
+if (!fs.existsSync('./dist')) {
+  fs.mkdirSync('./dist');
+}
+
+fs.writeFileSync('./dist/main.js', result);
